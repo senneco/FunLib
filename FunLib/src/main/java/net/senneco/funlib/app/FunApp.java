@@ -1,39 +1,79 @@
 package net.senneco.funlib.app;
 
 import android.app.Application;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.FieldNamingStrategy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.path.android.jobqueue.BaseJob;
 import com.path.android.jobqueue.JobManager;
+import com.path.android.jobqueue.config.Configuration;
+import com.path.android.jobqueue.di.DependencyInjector;
 import dagger.ObjectGraph;
 import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by senneco on 29.05.2014
  */
-public class FunApp extends Application {
+public class FunApp<T> extends Application {
 
-    private ObjectGraph mObjectGraph;
+    private static final Gson GSON;
+
+    private Object mApi;
     private JobManager mJobManager;
+    private ObjectGraph mObjectGraph;
 
-    protected Object mApi;
+    static {
+        GSON = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .setFieldNamingStrategy(new CustomFieldNamingPolicy())
+                .setPrettyPrinting()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .serializeNulls()
+                .create();
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         RestAdapter restAdapter = initRestAdapter();
+        Class apiClass = initApiClass();
 
-        mApi = restAdapter.create(getApiClass());
+        if (restAdapter != null && apiClass != null) {
+            mApi = restAdapter.create(apiClass);
+        }
 
-        mJobManager = new JobManager(this);
+        Configuration configuration = new Configuration.Builder(this)
+                .injector(new DependencyInjector() {
+                    @Override
+                    public void inject(BaseJob job) {
+                        mObjectGraph.inject(job);
+                    }
+                })
+                .id("fun[damental]")
+                .build();
 
-        mObjectGraph = ObjectGraph.create(new FunModule(this, getApiClass()));
-        mObjectGraph.injectStatics();
+        mJobManager = new JobManager(this, configuration);
+
+        mObjectGraph = ObjectGraph.create(new FunModule(this));
     }
 
-    protected RestAdapter initRestAdapter() {
+    protected String initRestUrl() {
         return null;
     }
 
-    public static Class getApiClass() {
+    protected RestAdapter initRestAdapter() {
+        return new RestAdapter.Builder()
+                .setEndpoint(initRestUrl())
+                .setConverter(new GsonConverter(GSON))
+                .build();
+    }
+
+    protected Class initApiClass() {
         return null;
     }
 
@@ -41,7 +81,18 @@ public class FunApp extends Application {
         return mJobManager;
     }
 
-    public Object getApi() {
-        return mApi;
+    public T getApi() {
+        //noinspection unchecked
+        return (T) mApi;
+    }
+
+    static class CustomFieldNamingPolicy implements FieldNamingStrategy {
+
+        @Override
+        public String translateName(Field field) {
+            String name = FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES.translateName(field);
+            name = name.substring(2, name.length()).toLowerCase();
+            return name;
+        }
     }
 }

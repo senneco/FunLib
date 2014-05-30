@@ -1,10 +1,9 @@
 package net.senneco.funlib.ui;
 
 import android.support.v4.app.Fragment;
-import com.squareup.otto.Subscribe;
+import de.greenrobot.event.EventBus;
 import net.senneco.funlib.app.FunApp;
 import net.senneco.funlib.jobs.FunJob;
-import net.senneco.funlib.jobs.JobEventBusProvider;
 import net.senneco.funlib.jobs.JobStateChangeEvent;
 import net.senneco.funlib.jobs.JobWrapper;
 
@@ -19,11 +18,11 @@ public class FunFragment extends Fragment implements FunJob.OnJobStateChangeList
     private Map<FunJob, FunJob.OnJobStateChangeListener> mJobStateChangeListeners = new HashMap<FunJob, FunJob.OnJobStateChangeListener>();
 
     public void startJob(FunJob job) {
-        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
+        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(1, new JobWrapper(job));
     }
 
     public void startJob(FunJob job, FunJob.OnJobStateChangeListener stateChangeListener) {
-        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
+        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(1, new JobWrapper(job));
         mJobStateChangeListeners.put(job, stateChangeListener);
     }
 
@@ -31,20 +30,17 @@ public class FunFragment extends Fragment implements FunJob.OnJobStateChangeList
     public void onResume() {
         super.onResume();
 
-        // Register ourselves so that we can provide the initial value.
-        JobEventBusProvider.getInstance().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        // Always unregister when an object no longer should be on the bus.
-        JobEventBusProvider.getInstance().unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
-    @Subscribe
-    public void onJobStateChanged(JobStateChangeEvent event) {
+    public void onEventMainThread(JobStateChangeEvent event) {
         FunJob.OnJobStateChangeListener stateChangeListener = mJobStateChangeListeners.get(event.getJob());
 
         if (stateChangeListener == null) {

@@ -1,35 +1,44 @@
 package net.senneco.funlib.jobs;
 
-import com.path.android.jobqueue.Job;
+import com.path.android.jobqueue.BaseJob;
+import de.greenrobot.event.EventBus;
+import net.senneco.funlib.app.FunApiProvider;
+
+import javax.inject.Inject;
 
 /**
  * Created by senneco on 29.05.2014
  */
-public class JobWrapper extends Job {
+public class JobWrapper extends BaseJob {
+
+    @Inject
+    transient FunApiProvider mFunApiProvider;
 
     private FunJob mJob;
     private Throwable mThrowable;
 
     public JobWrapper(FunJob job) {
-        super(job.getParams());
+        super(false, true);
         mJob = job;
     }
 
     @Override
     public void onAdded() {
-        JobEventBusProvider.getInstance().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.START));
+        EventBus.getDefault().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.START));
     }
 
     @Override
     public void onRun() throws Throwable {
+        mJob.setApiProvider(mFunApiProvider);
+
         Object result = mJob.doJob();
 
-        JobEventBusProvider.getInstance().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.COMPLETE, result));
+        EventBus.getDefault().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.COMPLETE, result));
     }
 
     @Override
     protected void onCancel() {
-        JobEventBusProvider.getInstance().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.FAIL, mThrowable));
+        EventBus.getDefault().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.FAIL, mThrowable));
     }
 
     @Override
