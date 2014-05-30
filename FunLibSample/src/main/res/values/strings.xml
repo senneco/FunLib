@@ -4,5 +4,6 @@
     <string name="app_name">FunLibSample</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="search_on_github">Search on github</string>
+    <string name="pushed_at">pushed</string>
 </resources>
