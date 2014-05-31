@@ -5,6 +5,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.path.android.jobqueue.BaseJob;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
@@ -23,6 +24,7 @@ public class FunApp<T> extends Application {
     private static final Gson GSON;
 
     private Object mApi;
+    private OrmLiteSqliteOpenHelper mDbHelper;
     private JobManager mJobManager;
     private ObjectGraph mObjectGraph;
 
@@ -47,6 +49,13 @@ public class FunApp<T> extends Application {
             mApi = restAdapter.create(apiClass);
         }
 
+        Class<? extends OrmLiteSqliteOpenHelper> dbHelperClass = initDbHelperClass();
+
+        if (dbHelperClass != null) {
+            FunDbHelperFactory.initDbHelper(this, dbHelperClass);
+            mDbHelper = FunDbHelperFactory.getDbHelper();
+        }
+
         Configuration configuration = new Configuration.Builder(this)
                 .injector(new DependencyInjector() {
                     @Override
@@ -60,6 +69,13 @@ public class FunApp<T> extends Application {
         mJobManager = new JobManager(this, configuration);
 
         mObjectGraph = ObjectGraph.create(new FunModule(this));
+    }
+
+    @Override
+    public void onTerminate() {
+        FunDbHelperFactory.releaseDbHelper();
+
+        super.onTerminate();
     }
 
     protected String initRestUrl() {
@@ -77,8 +93,16 @@ public class FunApp<T> extends Application {
         return null;
     }
 
+    protected Class<? extends OrmLiteSqliteOpenHelper> initDbHelperClass() {
+        return null;
+    }
+
     public JobManager getJobManager() {
         return mJobManager;
+    }
+
+    public OrmLiteSqliteOpenHelper getDbHelper() {
+        return mDbHelper;
     }
 
     public T getApi() {

@@ -1,5 +1,6 @@
 package net.senneco.funlib.jobs;
 
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.path.android.jobqueue.Job;
 import de.greenrobot.event.EventBus;
 import net.senneco.funlib.app.FunApiProvider;
@@ -13,6 +14,8 @@ public class JobWrapper extends Job {
 
     @Inject
     transient FunApiProvider mFunApiProvider;
+    @Inject
+    transient OrmLiteSqliteOpenHelper mDbHelper;
 
     private FunJob mJob;
     private Throwable mThrowable;
@@ -30,6 +33,7 @@ public class JobWrapper extends Job {
     @Override
     public void onRun() throws Throwable {
         mJob.setApiProvider(mFunApiProvider);
+        mJob.setDbHelper(mDbHelper);
 
         Object result = mJob.doJob();
 
