@@ -1,6 +1,6 @@
 package net.senneco.funlib.jobs;
 
-import com.path.android.jobqueue.BaseJob;
+import com.path.android.jobqueue.Job;
 import de.greenrobot.event.EventBus;
 import net.senneco.funlib.app.FunApiProvider;
 
@@ -9,7 +9,7 @@ import javax.inject.Inject;
 /**
  * Created by senneco on 29.05.2014
  */
-public class JobWrapper extends BaseJob {
+public class JobWrapper extends Job {
 
     @Inject
     transient FunApiProvider mFunApiProvider;
@@ -18,7 +18,7 @@ public class JobWrapper extends BaseJob {
     private Throwable mThrowable;
 
     public JobWrapper(FunJob job) {
-        super(false, true);
+        super(job.getParams());
         mJob = job;
     }
 

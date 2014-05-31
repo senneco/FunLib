@@ -18,11 +18,11 @@ public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateC
     private Map<FunJob, FunJob.OnJobStateChangeListener> mJobStateChangeListeners = new HashMap<FunJob, FunJob.OnJobStateChangeListener>();
 
     public void startJob(FunJob job) {
-        ((FunApp) getApplication()).getJobManager().addJobInBackground(1, new JobWrapper(job));
+        ((FunApp) getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
     }
 
     public void startJob(FunJob job, FunJob.OnJobStateChangeListener stateChangeListener) {
-        ((FunApp) getApplication()).getJobManager().addJobInBackground(1, new JobWrapper(job));
+        ((FunApp) getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
         mJobStateChangeListeners.put(job, stateChangeListener);
     }
 

@@ -18,11 +18,11 @@ public class FunFragment extends Fragment implements FunJob.OnJobStateChangeList
     private Map<FunJob, FunJob.OnJobStateChangeListener> mJobStateChangeListeners = new HashMap<FunJob, FunJob.OnJobStateChangeListener>();
 
     public void startJob(FunJob job) {
-        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(1, new JobWrapper(job));
+        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
     }
 
     public void startJob(FunJob job, FunJob.OnJobStateChangeListener stateChangeListener) {
-        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(1, new JobWrapper(job));
+        ((FunApp) getActivity().getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
         mJobStateChangeListeners.put(job, stateChangeListener);
     }
 
