@@ -1,5 +1,6 @@
 package net.senneco.funlib.sample.app;
 
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import net.senneco.funlib.app.FunApp;
 
 /**
@@ -7,6 +8,7 @@ import net.senneco.funlib.app.FunApp;
  */
 public class GithubApp extends FunApp<GithubApi> {
 
+    @Override
     protected String initRestUrl() {
         return "https://api.github.com";
     }
@@ -16,5 +18,8 @@ public class GithubApp extends FunApp<GithubApi> {
         return GithubApi.class;
     }
 
-
+    @Override
+    protected Class<? extends OrmLiteSqliteOpenHelper> initDbHelperClass() {
+        return GithubDbHelper.class;
+    }
 }

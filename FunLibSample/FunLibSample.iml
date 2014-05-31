@@ -70,18 +70,20 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.4 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="eventbus-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="ormlite-android-4.48" level="project" />
     <orderEntry type="library" exported="" name="guava-15.0" level="project" />
     <orderEntry type="library" exported="" name="javawriter-2.3.0" level="project" />
     <orderEntry type="library" exported="" name="android-priority-jobqueue-1.1.2" level="project" />
-    <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
     <orderEntry type="library" exported="" name="dagger-1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-19.1.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-19.1.0" level="project" />
-    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
-    <orderEntry type="library" exported="" name="retrofit-1.5.1" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="dagger-compiler-1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="eventbus-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="ormlite-core-4.48" level="project" />
+    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
+    <orderEntry type="library" exported="" name="retrofit-1.5.1" level="project" />
     <orderEntry type="module" module-name="FunLib-FunLib" exported="" />
   </component>
 </module>
