@@ -1,5 +1,6 @@
 package net.senneco.funlib.jobs;
 
+import android.net.Uri;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.path.android.jobqueue.Params;
 import net.senneco.funlib.app.FunApiProvider;
@@ -17,13 +18,19 @@ public abstract class FunJob<T> implements Serializable {
     private transient Params mParams;
 
     private final int mId;
+    private final String mUri;
 
     public FunJob(int id) {
-        this(id, new Params(1).persist());
+        this(id, null);
     }
 
-    FunJob(int id, Params params) {
+    public FunJob(int id, Uri uri) {
+        this(id, uri, new Params(1).persist());
+    }
+
+    FunJob(int id, Uri uri, Params params) {
         mId = id;
+        mUri = uri.toString();
         mParams = params;
     }
 
@@ -45,6 +52,10 @@ public abstract class FunJob<T> implements Serializable {
 
     public void setDbHelper(OrmLiteSqliteOpenHelper dbHelper) {
         mDbHelper = dbHelper;
+    }
+
+    public Uri getUri() {
+        return Uri.parse(mUri);
     }
 
     public Params getParams() {

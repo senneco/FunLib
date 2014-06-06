@@ -52,6 +52,10 @@ public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateC
                stateChangeListener.onStart(event.getJob());
                 break;
             case COMPLETE:
+                // TODO: DI context or content provider to job for do this work not here!!!
+                if (event.getJob().getUri() != null) {
+                    getContentResolver().notifyChange(event.getJob().getUri(), null);
+                }
                 stateChangeListener.onComplete(event.getJob(), event.getResult());
                 break;
             case FAIL:

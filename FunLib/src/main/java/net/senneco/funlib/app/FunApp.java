@@ -1,6 +1,7 @@
 package net.senneco.funlib.app;
 
 import android.app.Application;
+import android.util.Log;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
@@ -10,6 +11,7 @@ import com.path.android.jobqueue.BaseJob;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.di.DependencyInjector;
+import com.path.android.jobqueue.log.CustomLogger;
 import dagger.ObjectGraph;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
@@ -57,10 +59,32 @@ public class FunApp<T> extends Application {
         }
 
         Configuration configuration = new Configuration.Builder(this)
+
                 .injector(new DependencyInjector() {
                     @Override
                     public void inject(BaseJob job) {
                         mObjectGraph.inject(job);
+                    }
+                })
+                .customLogger(new CustomLogger() {
+                    @Override
+                    public boolean isDebugEnabled() {
+                        return true;
+                    }
+
+                    @Override
+                    public void d(String text, Object... args) {
+                        Log.e("***-***", text);
+                    }
+
+                    @Override
+                    public void e(Throwable t, String text, Object... args) {
+                        Log.e("***-***", text, t);
+                    }
+
+                    @Override
+                    public void e(String text, Object... args) {
+                        Log.e("***-***", text);
                     }
                 })
                 .id("fun[damental]")
