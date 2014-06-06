@@ -1,80 +1,64 @@
 package net.senneco.funlib.sample.ui.adapters;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.squareup.picasso.Picasso;
 import net.senneco.funlib.sample.R;
 import net.senneco.funlib.sample.data.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by senneco on 31.05.2014
  */
-public class SearchAdapter extends BaseAdapter {
+public class SearchAdapter extends CursorAdapter {
 
-    private List<Repository> mRepositories = new ArrayList<Repository>();
+    private int mNameIndex;
+    private int mPushedAtIndex;
 
-    public void setData(List<Repository> repositories) {
-        mRepositories = repositories;
-        notifyDataSetChanged();
+    public SearchAdapter(Context context) {
+        super(context, null, false);
     }
 
     @Override
-    public int getCount() {
-        return mRepositories.size();
-    }
+    public void changeCursor(Cursor newCursor) {
 
-    @Override
-    public Repository getItem(int position) {
-        return mRepositories.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return getItem(position).getId();
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        RepositoryHolder holder;
-
-        if (convertView == null) {
-            //noinspection ConstantConditions
-            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_repository, parent, false);
-
-            holder = new RepositoryHolder();
-
-            holder.avatarImage = (ImageView) convertView.findViewById(R.id.image_avatar);
-            holder.ownerText = (TextView) convertView.findViewById(R.id.text_owner);
-            holder.nameText = (TextView) convertView.findViewById(R.id.text_name);
-            holder.pushedAtText = (TextView) convertView.findViewById(R.id.text_pushed_at);
-
-            convertView.setTag(holder);
-        } else {
-            holder = (RepositoryHolder) convertView.getTag();
+        if (newCursor != null) {
+            mNameIndex = newCursor.getColumnIndex(Repository.Column.NAME);
+            mPushedAtIndex = newCursor.getColumnIndex(Repository.Column.PUSHED_AT);
         }
+        super.changeCursor(newCursor);
+    }
 
-        Repository repository = getItem(position);
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_repository, parent, false);
+
+        RepositoryHolder holder = new RepositoryHolder();
+
+        holder.avatarImage = (ImageView) view.findViewById(R.id.image_avatar);
+        holder.ownerText = (TextView) view.findViewById(R.id.text_owner);
+        holder.nameText = (TextView) view.findViewById(R.id.text_name);
+        holder.pushedAtText = (TextView) view.findViewById(R.id.text_pushed_at);
+
+        view.setTag(holder);
+
+        return view;
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        RepositoryHolder holder = (RepositoryHolder) view.getTag();
 
         Time pushedAt = new Time();
-        pushedAt.set(repository.getPushedAt().getTime());
+        pushedAt.set(cursor.getLong(mPushedAtIndex));
 
-        holder.ownerText.setText(repository.getOwner().getName());
-        holder.nameText.setText(repository.getName());
+        holder.nameText.setText(cursor.getString(mNameIndex));
         holder.pushedAtText.setText(pushedAt.format("%d.%m.%y at %R"));
-        Picasso.with(convertView.getContext())
-                .load(repository.getOwner().getAvatarUrl())
-                .fit()
-                .into(holder.avatarImage);
-
-        return convertView;
     }
 
     private class RepositoryHolder {

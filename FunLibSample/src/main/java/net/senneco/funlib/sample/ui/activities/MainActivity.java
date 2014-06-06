@@ -1,20 +1,21 @@
 package net.senneco.funlib.sample.ui.activities;
 
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-import net.senneco.funlib.jobs.FunJob;
+import net.senneco.funlib.loaders.LoaderResult;
 import net.senneco.funlib.sample.R;
-import net.senneco.funlib.sample.data.Repository;
 import net.senneco.funlib.sample.jobs.SearchJob;
+import net.senneco.funlib.sample.loaders.RepositoriesLoader;
 import net.senneco.funlib.sample.ui.adapters.SearchAdapter;
 import net.senneco.funlib.ui.FunActivity;
 
-import java.util.List;
 
-
-public class MainActivity extends FunActivity implements View.OnClickListener {
+public class MainActivity extends FunActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks {
 
     private EditText mSearchEdit;
     private SearchAdapter mSearchAdapter;
@@ -24,7 +25,7 @@ public class MainActivity extends FunActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_main);
 
-        mSearchAdapter = new SearchAdapter();
+        mSearchAdapter = new SearchAdapter(this);
 
         mSearchEdit = (EditText) findViewById(R.id.edit_search);
 
@@ -32,6 +33,8 @@ public class MainActivity extends FunActivity implements View.OnClickListener {
         resultsList.setAdapter(mSearchAdapter);
 
         findViewById(R.id.butt_search).setOnClickListener(this);
+
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -44,11 +47,17 @@ public class MainActivity extends FunActivity implements View.OnClickListener {
     }
 
     @Override
-    public void onComplete(FunJob job, Object result) {
-        super.onComplete(job, result);
+    public Loader onCreateLoader(int id, Bundle args) {
+        return new RepositoriesLoader(this);
+    }
 
-        if (job.getId() == 1) {
-            mSearchAdapter.setData((List<Repository>) result);
-        }
+    @Override
+    public void onLoadFinished (Loader loader,  Object result){
+         mSearchAdapter.changeCursor((Cursor) ((LoaderResult) result).getData());
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        mSearchAdapter.swapCursor(null);
     }
 }
