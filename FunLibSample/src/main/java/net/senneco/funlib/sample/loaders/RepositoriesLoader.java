@@ -17,7 +17,7 @@ public class RepositoriesLoader extends FunCursorLoader {
     }
 
     @Override
-    public Cursor loadCursor() throws Throwable {
+    public Cursor loadCursor() throws Exception {
         return CursorUtils.getCursor(getDbHelper(), getDbHelper().getDao(Repository.class).queryBuilder().prepare());
     }
 }

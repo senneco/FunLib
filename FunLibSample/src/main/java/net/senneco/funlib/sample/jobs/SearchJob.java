@@ -34,12 +34,15 @@ public class SearchJob extends FunJob<List<Repository>> {
     }
 
     private void saveRepositories(List<Repository> repositories) throws SQLException {
+        // init DAOs
         Dao<User, ?> userDao = getDbHelper().getDao(User.class);
         Dao<Repository, ?> repositoryDao = getDbHelper().getDao(Repository.class);
 
+        // Clear history
         userDao.deleteBuilder().delete();
         repositoryDao.deleteBuilder().delete();
 
+        // Save search results
         for (Repository repository : repositories) {
             userDao.createOrUpdate(repository.getOwner());
             repositoryDao.createOrUpdate(repository);
