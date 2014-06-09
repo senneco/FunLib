@@ -2,9 +2,8 @@ package net.senneco.funlib.sample.loaders;
 
 import android.content.Context;
 import android.database.Cursor;
-import net.senneco.funlib.common.CursorUtils;
+import android.database.sqlite.SQLiteDatabase;
 import net.senneco.funlib.loaders.FunCursorLoader;
-import net.senneco.funlib.sample.data.Repository;
 import net.senneco.funlib.sample.data.Uris;
 
 /**
@@ -18,6 +17,15 @@ public class RepositoriesLoader extends FunCursorLoader {
 
     @Override
     public Cursor loadCursor() throws Exception {
-        return CursorUtils.getCursor(getDbHelper(), getDbHelper().getDao(Repository.class).queryBuilder().prepare());
+        SQLiteDatabase readableDatabase = getDbHelper().getReadableDatabase();
+
+        assert readableDatabase != null;
+
+        Cursor result = readableDatabase.rawQuery("" +
+                "SELECT r.*, u.login, u.avatar " +
+                "FROM Repository r " +
+                "   JOIN User u ON r.owner = u._id", null);
+
+        return result;
     }
 }
