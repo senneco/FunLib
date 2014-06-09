@@ -22,6 +22,9 @@ public abstract class FunLoader<T> extends AsyncTaskLoader<LoaderResult<T>> {
         super(context);
 
         mUri = uri;
+    }
+
+    public void initLoader() {
         mObserver = new ForceLoadContentObserver();
     }
 
@@ -32,14 +35,14 @@ public abstract class FunLoader<T> extends AsyncTaskLoader<LoaderResult<T>> {
         try {
             T data = loadData();
             loaderResult.setData(data);
-        } catch (Throwable throwable) {
-            loaderResult.setThrowable(throwable);
+        } catch (Exception exception) {
+            loaderResult.setException(exception);
         }
 
         return loaderResult;
     }
 
-    protected abstract T loadData() throws Throwable;
+    protected abstract T loadData() throws Exception;
 
     @Override
     public void deliverResult(LoaderResult<T> data) {
@@ -119,5 +122,13 @@ public abstract class FunLoader<T> extends AsyncTaskLoader<LoaderResult<T>> {
         releaseResources(result);
 
         super.onCanceled(result);
+    }
+
+    public interface LoaderListener<T> {
+        public void onLoaderComplete(int loaderId, T result);
+
+        public void onLoaderFail(int loaderId, Exception exception);
+
+        public void onLoaderReset(int loaderId);
     }
 }

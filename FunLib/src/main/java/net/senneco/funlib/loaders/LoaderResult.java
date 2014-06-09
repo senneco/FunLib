@@ -5,7 +5,7 @@ package net.senneco.funlib.loaders;
  */
 public class LoaderResult<T> {
     public T mData;
-    public Throwable mThrowable;
+    public Exception mException;
 
     public LoaderResult() {
         // pass
@@ -15,8 +15,8 @@ public class LoaderResult<T> {
         mData = data;
     }
 
-    public LoaderResult(Throwable throwable) {
-        mThrowable = throwable;
+    public LoaderResult(Exception exception) {
+        mException = exception;
     }
 
     public T getData() {
@@ -27,11 +27,11 @@ public class LoaderResult<T> {
         mData = data;
     }
 
-    public Throwable getThrowable() {
-        return mThrowable;
+    public Exception getException() {
+        return mException;
     }
 
-    public void setThrowable(Throwable throwable) {
-        mThrowable = throwable;
+    public void setException(Exception exception) {
+        mException = exception;
     }
 }

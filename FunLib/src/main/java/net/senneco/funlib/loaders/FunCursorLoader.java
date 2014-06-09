@@ -17,7 +17,7 @@ public abstract class FunCursorLoader extends FunDbLoader<Cursor> {
         super(context, uri);
     }
 
-    public final Cursor loadData() throws Throwable {
+    public final Cursor loadData() throws Exception {
         Cursor cursor = loadCursor();
 
         if (cursor != null) {
@@ -28,7 +28,7 @@ public abstract class FunCursorLoader extends FunDbLoader<Cursor> {
         return cursor;
     }
 
-    public abstract Cursor loadCursor() throws Throwable;
+    public abstract Cursor loadCursor() throws Exception;
 
     @Override
     protected void releaseResources(LoaderResult<Cursor> result) {

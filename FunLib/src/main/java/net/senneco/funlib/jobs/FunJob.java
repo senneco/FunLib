@@ -87,10 +87,10 @@ public abstract class FunJob<T> implements Serializable {
 
     public static interface OnJobStateChangeListener {
 
-        void onStart(FunJob job);
+        void onJobStart(FunJob job);
 
-        void onComplete(FunJob job, Object result);
+        void onJobComplete(FunJob job, Object result);
 
-        void onFail(FunJob job, Throwable throwable);
+        void onJobFail(FunJob job, Throwable throwable);
     }
 }
