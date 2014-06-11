@@ -1,9 +1,11 @@
 package net.senneco.funlib.jobs;
 
+import android.net.Uri;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.path.android.jobqueue.Job;
 import de.greenrobot.event.EventBus;
 import net.senneco.funlib.app.FunApiProvider;
+import net.senneco.funlib.app.FunApp;
 
 import javax.inject.Inject;
 
@@ -12,6 +14,8 @@ import javax.inject.Inject;
  */
 public class JobWrapper extends Job {
 
+    @Inject
+    transient FunApp mFunApp;
     @Inject
     transient FunApiProvider mFunApiProvider;
     @Inject
@@ -27,7 +31,7 @@ public class JobWrapper extends Job {
 
     @Override
     public void onAdded() {
-        EventBus.getDefault().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.START));
+        EventBus.getDefault().post(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.START));
     }
 
     @Override
@@ -37,12 +41,17 @@ public class JobWrapper extends Job {
 
         Object result = mJob.doJob();
 
-        EventBus.getDefault().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.COMPLETE, result));
+        Uri uri = mJob.getUri();
+        if (uri != null) {
+            mFunApp.getContentResolver().notifyChange(mJob.getUri(), null);
+        }
+
+        EventBus.getDefault().post(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.COMPLETE, result));
     }
 
     @Override
     protected void onCancel() {
-        EventBus.getDefault().post(new JobStateChangeEvent(mJob, JobStateChangeEvent.JobState.FAIL, mThrowable));
+        EventBus.getDefault().post(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.FAIL, mThrowable));
     }
 
     @Override

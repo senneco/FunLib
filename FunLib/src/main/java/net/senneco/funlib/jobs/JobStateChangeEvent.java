@@ -5,23 +5,23 @@ package net.senneco.funlib.jobs;
  */
 public class JobStateChangeEvent {
 
-    private FunJob mJob;
+    private int mJobId;
     private JobState mJobState;
     private Object mResult;
 
-    public JobStateChangeEvent(FunJob job, JobState jobState) {
-        mJob = job;
+    public JobStateChangeEvent(int jobId, JobState jobState) {
+        mJobId = jobId;
         mJobState = jobState;
     }
 
-    public JobStateChangeEvent(FunJob job, JobState jobState, Object result) {
-        mJob = job;
+    public JobStateChangeEvent(int jobId, JobState jobState, Object result) {
+        mJobId = jobId;
         mJobState = jobState;
         mResult = result;
     }
 
-    public FunJob getJob() {
-        return mJob;
+    public int getJobId() {
+        return mJobId;
     }
 
     public JobState getJobState() {
@@ -45,7 +45,7 @@ public class JobStateChangeEvent {
 
         @Override
         public String toString() {
-            return "WorkerState{" +
+            return "JobState{" +
                     "mValue='" + mValue + '\'' +
                     '}';
         }

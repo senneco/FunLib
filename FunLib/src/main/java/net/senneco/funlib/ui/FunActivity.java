@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import de.greenrobot.event.EventBus;
 import net.senneco.funlib.app.FunApp;
@@ -19,9 +20,10 @@ import java.util.Map;
 /**
  * Created by senneco on 29.05.2014
  */
+@SuppressWarnings("unchecked")
 public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateChangeListener, LoaderManager.LoaderCallbacks<LoaderResult>, FunLoader.LoaderListener<Object> {
 
-    private Map<FunJob, FunJob.OnJobStateChangeListener> mJobStateChangeListeners = new HashMap<FunJob, FunJob.OnJobStateChangeListener>();
+    private SparseArray<FunJob.OnJobStateChangeListener> mJobStateChangeListeners = new SparseArray<FunJob.OnJobStateChangeListener>();
     private SparseArray<FunLoader<LoaderResult>> mLoaders = new SparseArray<FunLoader<LoaderResult>>();
     private SparseArray<FunLoader.LoaderListener> mLoaderListeners = new SparseArray<FunLoader.LoaderListener>();
 
@@ -50,17 +52,43 @@ public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateC
         return (FunApp) getApplication();
     }
 
+    public int getAsyncId(Class asyncClass, Object... params) {
+        String id = ((Object) this).getClass().getSimpleName() + "." + asyncClass.getSimpleName();
+
+        if (params.length > 0) {
+            id += "." + TextUtils.join(".", params);
+        }
+
+        return id.hashCode();
+    }
+
     public void startJob(FunJob job) {
-        ((FunApp) getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
+        startJob(job.getId(), job, null);
+    }
+
+    public void startJob(int id, FunJob job) {
+        startJob(id, job, null);
     }
 
     public void startJob(FunJob job, FunJob.OnJobStateChangeListener stateChangeListener) {
-        ((FunApp) getApplication()).getJobManager().addJobInBackground(new JobWrapper(job));
-        mJobStateChangeListeners.put(job, stateChangeListener);
+        startJob(job.getId(), job, stateChangeListener);
+    }
+
+    public void startJob(int jobId, FunJob job, FunJob.OnJobStateChangeListener stateChangeListener) {
+        if (jobId == 0) {
+            jobId = getAsyncId(job.getClass());
+        }
+        job.setId(jobId);
+
+        getApp().getJobManager().addJobInBackground(new JobWrapper(job));
+
+        if (stateChangeListener != null) {
+            mJobStateChangeListeners.put(jobId, stateChangeListener);
+        }
     }
 
     public void onEventMainThread(JobStateChangeEvent event) {
-        FunJob.OnJobStateChangeListener stateChangeListener = mJobStateChangeListeners.get(event.getJob());
+        FunJob.OnJobStateChangeListener stateChangeListener = mJobStateChangeListeners.get(event.getJobId());
 
         if (stateChangeListener == null) {
             stateChangeListener = this;
@@ -68,34 +96,34 @@ public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateC
 
         switch (event.getJobState()) {
             case START:
-                stateChangeListener.onJobStart(event.getJob());
+                stateChangeListener.onJobStart(event.getJobId());
                 break;
             case COMPLETE:
-                // TODO: DI context or content provider to job for do this work not here!!!
-                if (event.getJob().getUri() != null) {
-                    getContentResolver().notifyChange(event.getJob().getUri(), null);
-                }
-                stateChangeListener.onJobComplete(event.getJob(), event.getResult());
+                stateChangeListener.onJobComplete(event.getJobId(), event.getResult());
                 break;
             case FAIL:
-                stateChangeListener.onJobFail(event.getJob(), (Throwable) event.getResult());
+                stateChangeListener.onJobFail(event.getJobId(), (Throwable) event.getResult());
                 break;
         }
     }
 
     @Override
-    public void onJobStart(FunJob job) {
+    public void onJobStart(int jobId) {
 
     }
 
     @Override
-    public void onJobComplete(FunJob job, Object result) {
+    public void onJobComplete(int jobId, Object result) {
 
     }
 
     @Override
-    public void onJobFail(FunJob job, Throwable throwable) {
+    public void onJobFail(int jobId, Throwable throwable) {
 
+    }
+
+    public void initLoader(FunLoader loader, FunLoader.LoaderListener<?> loaderListener) {
+        initLoader(getAsyncId(loader.getClass()), loader, loaderListener);
     }
 
     public void initLoader(int id, FunLoader loader, FunLoader.LoaderListener<?> loaderListener) {
@@ -105,7 +133,11 @@ public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateC
         getSupportLoaderManager().initLoader(id, null, this);
     }
 
-    public void restartLoader(int id, FunLoader<LoaderResult> loader, FunLoader.LoaderListener<Object> loaderListener) {
+    public void restartLoader(FunLoader loader, FunLoader.LoaderListener<?> loaderListener) {
+        restartLoader(getAsyncId(loader.getClass()), loader, loaderListener);
+    }
+
+    public void restartLoader(int id, FunLoader loader, FunLoader.LoaderListener<?> loaderListener) {
         mLoaders.put(id, loader);
         mLoaderListeners.put(id, loaderListener);
 
@@ -128,6 +160,7 @@ public class FunActivity extends ActionBarActivity implements FunJob.OnJobStateC
             return;
         }
 
+        //noinspection ThrowableResultOfMethodCallIgnored
         if (data.getException() == null) {
             loaderListener.onLoaderComplete(loader.getId(), data.getData());
         } else {

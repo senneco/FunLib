@@ -1,6 +1,7 @@
 package net.senneco.funlib.jobs;
 
 import android.net.Uri;
+import android.text.TextUtils;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.path.android.jobqueue.Params;
 import net.senneco.funlib.app.FunApiProvider;
@@ -17,25 +18,30 @@ public abstract class FunJob<T> implements Serializable {
     private transient OrmLiteSqliteOpenHelper mDbHelper;
     private transient Params mParams;
 
-    private final int mId;
     private final String mUri;
 
-    public FunJob(int id) {
-        this(id, null);
+    private int mId;
+
+    public FunJob() {
+        this(null);
     }
 
-    public FunJob(int id, Uri uri) {
-        this(id, uri, new Params(1).persist());
+    public FunJob(Uri uri) {
+        this(uri, new Params(1).persist());
     }
 
-    FunJob(int id, Uri uri, Params params) {
-        mId = id;
+    FunJob(Uri uri, Params params) {
+        mId = 0;
         mUri = uri.toString();
         mParams = params;
     }
 
     public int getId() {
         return mId;
+    }
+
+    public void setId(int id) {
+        mId = id;
     }
 
     public void setApiProvider(FunApiProvider apiProvider) {
@@ -55,6 +61,9 @@ public abstract class FunJob<T> implements Serializable {
     }
 
     public Uri getUri() {
+        if (TextUtils.isEmpty(mUri)) {
+            return null;
+        }
         return Uri.parse(mUri);
     }
 
@@ -87,10 +96,10 @@ public abstract class FunJob<T> implements Serializable {
 
     public static interface OnJobStateChangeListener {
 
-        void onJobStart(FunJob job);
+        void onJobStart(int jobId);
 
-        void onJobComplete(FunJob job, Object result);
+        void onJobComplete(int jobId, Object result);
 
-        void onJobFail(FunJob job, Throwable throwable);
+        void onJobFail(int jobId, Throwable throwable);
     }
 }
