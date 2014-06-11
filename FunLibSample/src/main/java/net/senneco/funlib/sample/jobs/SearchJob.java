@@ -17,8 +17,8 @@ import java.util.List;
 public class SearchJob extends FunJob<List<Repository>> {
     private String mQuery;
 
-    public SearchJob(int id, String query) {
-        super(id, Uris.REPOSITORIES);
+    public SearchJob(String query) {
+        super(Uris.REPOSITORIES);
         mQuery = query;
     }
 

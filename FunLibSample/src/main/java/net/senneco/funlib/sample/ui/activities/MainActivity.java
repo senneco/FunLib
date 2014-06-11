@@ -32,7 +32,7 @@ public class MainActivity extends FunActivity implements View.OnClickListener {
 
         findViewById(R.id.butt_search).setOnClickListener(this);
 
-        initLoader(0, new RepositoriesLoader(this), new FunLoader.LoaderListener<Cursor>() {
+        initLoader(new RepositoriesLoader(this), new FunLoader.LoaderListener<Cursor>() {
             @Override
             public void onLoaderComplete(int loaderId, Cursor result) {
                 mSearchAdapter.changeCursor(result);
@@ -55,7 +55,7 @@ public class MainActivity extends FunActivity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.butt_search:
                 //noinspection ConstantConditions
-                startJob(new SearchJob(1, mSearchEdit.getText().toString()));
+                startJob(new SearchJob(mSearchEdit.getText().toString()));
                 break;
         }
     }

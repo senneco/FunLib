@@ -26,7 +26,7 @@ public class SearchAdapter extends CursorAdapter {
     private int mOwnerIndex;
     private int mNameIndex;
     private int mPushedAtIndex;
-    private int mAvaterIndex;
+    private int mAvatarIndex;
 
     private SimpleDateFormat mDateFormat;
 
@@ -42,7 +42,7 @@ public class SearchAdapter extends CursorAdapter {
             mOwnerIndex = newCursor.getColumnIndex(User.Column.LOGIN);
             mNameIndex = newCursor.getColumnIndex(Repository.Column.NAME);
             mPushedAtIndex = newCursor.getColumnIndex(Repository.Column.PUSHED_AT);
-            mAvaterIndex = newCursor.getColumnIndex(User.Column.AVATAR);
+            mAvatarIndex = newCursor.getColumnIndex(User.Column.AVATAR);
         }
         super.changeCursor(newCursor);
     }
@@ -81,7 +81,7 @@ public class SearchAdapter extends CursorAdapter {
         holder.pushedAtText.setText(pushedAtTime.format("%d.%m.%y at %R"));
 
         Picasso.with(context)
-                .load(cursor.getString(mAvaterIndex))
+                .load(cursor.getString(mAvatarIndex))
                 .fit()
                 .into(holder.avatarImage);
 
