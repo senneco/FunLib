@@ -31,7 +31,7 @@ public class JobWrapper extends Job {
 
     @Override
     public void onAdded() {
-        EventBus.getDefault().post(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.START));
+        EventBus.getDefault().postSticky(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.START));
     }
 
     @Override
@@ -46,12 +46,12 @@ public class JobWrapper extends Job {
             mFunApp.getContentResolver().notifyChange(mJob.getUri(), null);
         }
 
-        EventBus.getDefault().post(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.COMPLETE, result));
+        EventBus.getDefault().postSticky(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.COMPLETE, result));
     }
 
     @Override
     protected void onCancel() {
-        EventBus.getDefault().post(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.FAIL, mThrowable));
+        EventBus.getDefault().postSticky(new JobStateChangeEvent(mJob.getId(), JobStateChangeEvent.JobState.FAIL, mThrowable));
     }
 
     @Override

@@ -32,8 +32,8 @@ public abstract class FunJob<T> implements Serializable {
 
     FunJob(Uri uri, Params params) {
         mId = 0;
-        mUri = uri.toString();
         mParams = params;
+        mUri = uri != null ? uri.toString() : "";
     }
 
     public int getId() {
@@ -94,11 +94,11 @@ public abstract class FunJob<T> implements Serializable {
         return mId;
     }
 
-    public static interface OnJobStateChangeListener {
+    public static interface OnJobStateChangeListener<T> {
 
         void onJobStart(int jobId);
 
-        void onJobComplete(int jobId, Object result);
+        void onJobComplete(int jobId, T result);
 
         void onJobFail(int jobId, Throwable throwable);
     }
