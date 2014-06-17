@@ -1,6 +1,7 @@
 package net.senneco.funlib.app;
 
 import android.app.Application;
+import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.FieldNamingStrategy;
@@ -13,6 +14,7 @@ import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.di.DependencyInjector;
 import com.path.android.jobqueue.log.CustomLogger;
 import dagger.ObjectGraph;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
@@ -107,10 +109,26 @@ public class FunApp<T> extends Application {
     }
 
     protected RestAdapter initRestAdapter() {
-        return new RestAdapter.Builder()
-                .setEndpoint(initRestUrl())
-                .setConverter(new GsonConverter(GSON))
-                .build();
+        RestAdapter.Builder builder = new RestAdapter.Builder();
+
+        if (TextUtils.isEmpty(initRestUrl())) {
+            return null;
+        }
+
+        builder.setEndpoint(initRestUrl());
+        builder.setConverter(new GsonConverter(GSON));
+
+        RequestInterceptor requestInterceptor = initRequestInterceptor();
+        if (requestInterceptor != null) {
+            builder.setRequestInterceptor(requestInterceptor);
+        }
+
+        return builder.build();
+
+    }
+
+    protected RequestInterceptor initRequestInterceptor() {
+        return null;
     }
 
     protected Class initApiClass() {
