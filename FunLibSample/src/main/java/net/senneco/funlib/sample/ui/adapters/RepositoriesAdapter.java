@@ -21,7 +21,7 @@ import java.util.Date;
 /**
  * Created by senneco on 31.05.2014
  */
-public class SearchAdapter extends CursorAdapter {
+public class RepositoriesAdapter extends CursorAdapter {
 
     private int mOwnerIndex;
     private int mNameIndex;
@@ -30,7 +30,7 @@ public class SearchAdapter extends CursorAdapter {
 
     private SimpleDateFormat mDateFormat;
 
-    public SearchAdapter(Context context) {
+    public RepositoriesAdapter(Context context) {
         super(context, null, false);
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }

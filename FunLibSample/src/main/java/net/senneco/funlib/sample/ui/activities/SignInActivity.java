@@ -67,7 +67,7 @@ public class SignInActivity extends FunActivity implements View.OnClickListener 
 
                 PrefUtils.setToken(context, token);
 
-                startActivity(new Intent(context, MainActivity.class));
+                startActivity(new Intent(context, HomeActivity.class));
                 finish();
             }
 

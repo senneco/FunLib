@@ -23,4 +23,5 @@ dependencies {
     compile project(':FunLib')
     compile 'com.android.support:appcompat-v7:19.+'
     compile 'com.google.android.gms:play-services:4.2.42'
+    compile 'com.android.support:support-v4:19.+'
 }

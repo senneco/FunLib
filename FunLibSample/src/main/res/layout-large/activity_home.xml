@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="DisableBaselineAlignment">
+
+    <fragment android:name="net.senneco.funlib.sample.ui.fragments.RepositoriesFragment"
+        android:id="@+id/fragment_repositories"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+
+    <fragment android:name="net.senneco.funlib.sample.ui.fragments.RepositoryFragment"
+        android:id="@+id/fragment_repository"
+        android:layout_weight="2"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
