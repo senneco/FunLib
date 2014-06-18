@@ -17,6 +17,7 @@ import net.senneco.funlib.sample.R;
  *
  */
 public class RepositoryFragment extends Fragment {
+
     private static final String ARG_REPO_ID = "repo_id";
 
     private int mRepoId;

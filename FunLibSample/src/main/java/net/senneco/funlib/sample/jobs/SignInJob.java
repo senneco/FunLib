@@ -2,11 +2,12 @@ package net.senneco.funlib.sample.jobs;
 
 import net.senneco.funlib.jobs.FunJob;
 import net.senneco.funlib.sample.app.GithubApi;
+import net.senneco.funlib.sample.data.User;
 
 /**
  * Created by senneco on 17.06.2014
  */
-public class SignInJob extends FunJob<Void> {
+public class SignInJob extends FunJob<User> {
 
     private String mToken;
 
@@ -15,10 +16,8 @@ public class SignInJob extends FunJob<Void> {
     }
 
     @Override
-    public Void doJob() throws Throwable {
+    public User doJob() throws Throwable {
 
-        ((GithubApi) getApi()).signIn(mToken);
-
-        return null;
+        return ((GithubApi) getApi()).signIn(mToken);
     }
 }

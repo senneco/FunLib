@@ -3,7 +3,7 @@ package net.senneco.funlib.sample.app;
 import android.text.TextUtils;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import net.senneco.funlib.app.FunApp;
-import net.senneco.funlib.sample.common.PrefUtils;
+import net.senneco.funlib.sample.common.AuthUtils;
 import retrofit.RequestInterceptor;
 
 /**
@@ -26,7 +26,7 @@ public class GithubApp extends FunApp<GithubApi> {
         return new RequestInterceptor() {
             @Override
             public void intercept(RequestFacade request) {
-                String token = PrefUtils.getToken(GithubApp.this);
+                String token = AuthUtils.getToken(GithubApp.this);
 
                 if (!TextUtils.isEmpty(token)) {
                     request.addHeader("Authorization", token);
