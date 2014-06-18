@@ -20,11 +20,11 @@ public abstract class FunDbHelper extends OrmLiteSqliteOpenHelper {
         super(context, databaseName, null, databaseVersion);
     }
 
-    private static String getDbName(Context context) {
+    public static String getDbName(Context context) {
         return context.getPackageName() + ".db";
     }
 
-    private static int getDbVersion(Context context) {
+    public static int getDbVersion(Context context) {
         int versionCode = 1;
 
         try {
